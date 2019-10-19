@@ -1,3 +1,4 @@
+/*-----------------------------------------------------function userInformationHTML------*/
 // user is the object that's been returned from the GitHub API.
 function userInformationHTML(user) {
     return `
@@ -17,6 +18,31 @@ function userInformationHTML(user) {
 }
 
 
+/*-----------------------------------------------------function repoInformationHTML------*/
+function repoInformationHTML(repos) {
+    if (repos.length == 0) {
+        return `<div class="clearfix repo-list">No repos!</div>`
+    }
+
+    var listItemsHTML = repos.map(function(repo) {
+        return `<li>
+                    <a href="${repo.html_url}" target="_blank">${repo.name}</a>
+                </li>`;
+    });
+
+    return `<div class="clearfix repo-list">
+                <p>
+                    <strong>Repo List:</strong>
+                </p>
+                <ul>
+                    ${listItemsHTML.join("\n")}
+                </ul>
+            </div>`;
+}
+
+
+
+/*-----------------------------------------------------function fetchGitHubInformation------*/
 function fetchGitHubInformation(event) {
     // val() - value in the text field.
     var username = $("#gh-username").val();
@@ -34,13 +60,18 @@ function fetchGitHubInformation(event) {
     // Issuing a promise.
     // when() takes function as first argument - is getJSON.
     $.when(
-        $.getJSON(`https://api.github.com/users/${username}`)
+        $.getJSON(`https://api.github.com/users/${username}`),
+        $.getJSON(`https://api.github.com/users/${username}/repos`)
     ).then(
-        // First argument is the response that came back from our getJSON() method.
-        function(response) {
-            var userData = response;
+        // When we do two calls like this, the when() method packs a response up into arrays.
+        function(firstResponse, secondResponse) {
+            var userData = firstResponse[0];
+            var repoData = secondResponse[0];
+
             // Another function called userInformationHTML.
+            // A second function called repoInformationHTML.
             $("#gh-user-data").html(userInformationHTML(userData));
+            $("#gh-repo-data").html(repoInformationHTML(repoData));
         }, function (errorResponse) {
             // If the errorResponse.status === 404, then select our gh-user-data div
             // and set its HTML to an error message that says the user wasn't found.
