@@ -19,17 +19,22 @@ function userInformationHTML(user) {
 
 
 /*-----------------------------------------------------function repoInformationHTML------*/
+// Takes one argument, which is repos, the object returned from our GitHub API.
 function repoInformationHTML(repos) {
     if (repos.length == 0) {
         return `<div class="clearfix repo-list">No repos!</div>`
     }
 
+    // If data has been returned, then since it's an array, we want to
+    // iterate through it and get that information out.
     var listItemsHTML = repos.map(function(repo) {
         return `<li>
                     <a href="${repo.html_url}" target="_blank">${repo.name}</a>
                 </li>`;
     });
 
+    // map() returns an array - going to do is use the join() method
+    // on that array and join everything with a new line.
     return `<div class="clearfix repo-list">
                 <p>
                     <strong>Repo List:</strong>
@@ -44,6 +49,10 @@ function repoInformationHTML(repos) {
 
 /*-----------------------------------------------------function fetchGitHubInformation------*/
 function fetchGitHubInformation(event) {
+    // Setting their HTML content to an empty string has the effect of emptying these divs.
+    $("#gh-user-data").html("");
+    $("#gh-repo-data").html("");
+
     // val() - value in the text field.
     var username = $("#gh-username").val();
 
@@ -83,3 +92,6 @@ function fetchGitHubInformation(event) {
             }
         });
 }
+
+// Displaying Octocat instead of an empty div.
+$(document).ready(fetchGitHubInformation);
