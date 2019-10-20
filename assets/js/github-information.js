@@ -86,6 +86,10 @@ function fetchGitHubInformation(event) {
             // and set its HTML to an error message that says the user wasn't found.
             if (errorResponse.status === 404) {
                 $("#gh-user-data").html(`<h2>No info found for user ${username}</h2>`);
+            } else if (errorResponse.status === 403) {
+                // toLocaleDateString() method - pick up your location from your browser and print the local time.
+                var resetTime = new Date(errorResponse.getResponseHeader('X-RateLimit-Reset') * 1000);
+                $("#gh-user-data").html(`<h4>Too many requests, please wait until ${resetTime.toLocaleTimeString()}</h4>`);
             } else {
                 console.log(errorResponse);
                 $("#gh-user-data").html(`<h2>Error: ${errorResponse}</h2>`);
